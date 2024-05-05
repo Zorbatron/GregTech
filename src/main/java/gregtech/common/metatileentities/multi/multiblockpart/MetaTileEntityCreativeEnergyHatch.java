@@ -26,6 +26,7 @@ import gregtech.client.utils.TooltipHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import org.jetbrains.annotations.NotNull;
@@ -115,6 +116,11 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
 
         builder.label(7, 74, "gregtech.creative.energy.amperage");
         builder.widget(new ClickButtonWidget(7, 87, 20, 20, "-", data -> amps = --amps == -1 ? 0 : amps));
+        builder.widget(new ClickButtonWidget(7, 111, 20, 20, "÷4", clickData -> {
+            if (amps / 4 > 0) {
+                amps = Math.round(amps / 4);
+            }
+        }));
         builder.widget(new ImageWidget(29, 87, 118, 20, GuiTextures.DISPLAY));
         builder.widget(new TextFieldWidget2(31, 93, 114, 16, () -> String.valueOf(amps), value -> {
             if (!value.isEmpty()) {
@@ -125,6 +131,13 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
         builder.widget(new ClickButtonWidget(149, 87, 20, 20, "+", data -> {
             if (amps < Integer.MAX_VALUE) {
                 amps++;
+            }
+            updateEnergy();
+        }));
+        builder.widget(new ClickButtonWidget(149, 111, 20, 20, "x4", data -> {
+            //Somehow doesn't block it from going over max int.
+            if (amps * 4 < Integer.MAX_VALUE) {
+                amps = amps * 4;
             }
             updateEnergy();
         }));
@@ -170,5 +183,21 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
     private void updateEnergy() {
         this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * 64L * amps,
                 voltage, amps);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound data) {
+        data.setLong("Voltage", voltage);
+        data.setInteger("Amps", amps);
+        data.setByte("Tier", (byte) setTier);
+        return super.writeToNBT(data);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound data) {
+        voltage = data.getLong("Voltage");
+        amps = data.getInteger("Amps");
+        setTier = data.getByte("Tier");
+        super.readFromNBT(data);
     }
 }
