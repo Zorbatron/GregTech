@@ -4046,6 +4046,7 @@ gregtech.scanner.copy_stick_to=§oCopy of Stick
 gregtech.scanner.copy_stick_empty=§oEmpty Stick
 
 gregtech.machine.infinite_energy.name=Infinite GT Energy Unit Emitter
+gregtech.machine.energy_hatch.creative.name=Creative Energy Hatch
 gregtech.machine.creative_chest.name=Creative Quantum Chest
 gregtech.machine.creative_tank.name=Creative Quantum Tank
 gregtech.creative_tooltip.1=§7You just need

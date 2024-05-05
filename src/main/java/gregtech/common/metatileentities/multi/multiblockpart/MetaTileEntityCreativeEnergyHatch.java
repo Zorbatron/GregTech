@@ -1,0 +1,174 @@
+package gregtech.common.metatileentities.multi.multiblockpart;
+
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.pipeline.IVertexOperation;
+import codechicken.lib.vec.Matrix4;
+
+import gregtech.api.GTValues;
+import gregtech.api.capability.IEnergyContainer;
+import gregtech.api.capability.impl.EnergyContainerHandler;
+import gregtech.api.gui.GuiTextures;
+import gregtech.api.gui.ModularUI;
+import gregtech.api.gui.widgets.ClickButtonWidget;
+import gregtech.api.gui.widgets.CycleButtonWidget;
+import gregtech.api.gui.widgets.ImageWidget;
+import gregtech.api.gui.widgets.TextFieldWidget2;
+import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
+import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.util.GTUtility;
+import gregtech.client.renderer.texture.Textures;
+import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
+import gregtech.client.utils.PipelineUtil;
+import gregtech.client.utils.TooltipHelper;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Function;
+
+public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockPart implements
+                                                                                    IMultiblockAbilityPart<IEnergyContainer> {
+    protected IEnergyContainer energyContainer;
+
+    private long voltage = 0;
+    private int amps = 1;
+
+    private int setTier = 0;
+
+    public MetaTileEntityCreativeEnergyHatch() {
+        super(GTUtility.gregtechId("energy_hatch.creative"), GTValues.MAX);
+        this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * 64L * amps,
+                voltage, amps);
+    }
+
+    @Override
+    public MetaTileEntity createMetaTileEntity(IGregTechTileEntity tileEntity) {
+        return new MetaTileEntityCreativeEnergyHatch();
+    }
+
+    @Override
+    public void renderMetaTileEntity(CCRenderState renderState, Matrix4 translation, IVertexOperation[] pipeline) {
+        super.renderMetaTileEntity(renderState, translation, pipeline);
+        if (shouldRenderOverlay()) {
+            getOverlay().renderSided(getFrontFacing(), renderState, translation,
+                    PipelineUtil.color(pipeline, GTValues.VC[getTier()]));
+        }
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, boolean advanced) {
+        tooltip.add(I18n.format("gregtech.creative_tooltip.1") + TooltipHelper.RAINBOW +
+                I18n.format("gregtech.creative_tooltip.2") + I18n.format("gregtech.creative_tooltip.3"));
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        long fillAmount = energyContainer.getEnergyCapacity() - energyContainer.getEnergyStored();
+        if (fillAmount > 0) {
+            energyContainer.addEnergy(fillAmount);
+        }
+    }
+
+    @NotNull
+    private SimpleOverlayRenderer getOverlay() {
+        return Textures.ENERGY_IN_MULTI;
+    }
+
+    @Override
+    public MultiblockAbility<IEnergyContainer> getAbility() {
+        return MultiblockAbility.INPUT_ENERGY;
+    }
+
+    @Override
+    public void registerAbilities(List<IEnergyContainer> abilityList) {
+        abilityList.add(energyContainer);
+    }
+
+    @Override
+    protected ModularUI createUI(EntityPlayer entityPlayer) {
+        //Voltage selector
+        ModularUI.Builder builder = ModularUI.defaultBuilder()
+                .widget(new CycleButtonWidget(7, 7, 30, 20, GTValues.VNF, () -> setTier, tier -> {
+                    setTier = tier;
+                    voltage = GTValues.V[setTier];
+                    updateEnergy();
+                }));
+        builder.label(7, 32, "gregtech.creative.energy.voltage");
+        builder.widget(new ImageWidget(7, 44, 156, 20, GuiTextures.DISPLAY));
+        builder.widget(new TextFieldWidget2(9, 50, 152, 16, () -> String.valueOf(voltage), value -> {
+            if (!value.isEmpty()) {
+                voltage = Long.parseLong(value);
+                setTier = GTUtility.getTierByVoltage(voltage);
+                updateEnergy();
+            }
+        }).setAllowedChars(TextFieldWidget2.NATURAL_NUMS).setMaxLength(19).setValidator(getTextFieldValidator()));
+
+        builder.label(7, 74, "gregtech.creative.energy.amperage");
+        builder.widget(new ClickButtonWidget(7, 87, 20, 20, "-", data -> amps = --amps == -1 ? 0 : amps));
+        builder.widget(new ImageWidget(29, 87, 118, 20, GuiTextures.DISPLAY));
+        builder.widget(new TextFieldWidget2(31, 93, 114, 16, () -> String.valueOf(amps), value -> {
+            if (!value.isEmpty()) {
+                amps = Integer.parseInt(value);
+            }
+            updateEnergy();
+        }).setMaxLength(10).setNumbersOnly(0, Integer.MAX_VALUE));
+        builder.widget(new ClickButtonWidget(149, 87, 20, 20, "+", data -> {
+            if (amps < Integer.MAX_VALUE) {
+                amps++;
+            }
+            updateEnergy();
+        }));
+
+        //builder.dynamicLabel(7, 110, () -> "Energy I/O per sec: " + this.lastEnergyIOPerSec, 0x232323);
+
+        /* builder.widget(new CycleButtonWidget(7, 139, 77, 20, () -> active, this::setActive,
+                "gregtech.creative.activity.off", "gregtech.creative.activity.on")); */
+        /* builder.widget(new CycleButtonWidget(85, 139, 77, 20, () -> source, value -> {
+            source = value;
+            if (source) {
+                voltage = 0;
+                amps = 0;
+                setTier = 0;
+            } else {
+                voltage = V[MAX];
+                amps = Integer.MAX_VALUE;
+                setTier = 14;
+            }
+        }, "gregtech.creative.energy.sink", "gregtech.creative.energy.source")); */
+
+        return builder.build(getHolder(), entityPlayer);
+    }
+
+    public static Function<String, String> getTextFieldValidator() {
+        return val -> {
+            if (val.isEmpty()) {
+                return "0";
+            }
+            long num;
+            try {
+                num = Long.parseLong(val);
+            } catch (NumberFormatException ignored) {
+                return "0";
+            }
+            if (num < 0) {
+                return "0";
+            }
+            return val;
+        };
+    }
+
+    private void updateEnergy() {
+        this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * 64L * amps,
+                voltage, amps);
+    }
+}

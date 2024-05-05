@@ -75,6 +75,7 @@ import gregtech.common.metatileentities.multi.electric.generator.MetaTileEntityL
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityAutoMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCleaningMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityComputationHatch;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCreativeEnergyHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityDataAccessHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnergyHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityFluidHatch;
@@ -217,6 +218,7 @@ public class MetaTileEntities {
     public static final MetaTileEntityEnergyHatch[] ENERGY_OUTPUT_HATCH_16A = new MetaTileEntityEnergyHatch[5]; // IV, LuV, ZPM, UV, UHV
     public static final MetaTileEntitySubstationEnergyHatch[] SUBSTATION_ENERGY_INPUT_HATCH = new MetaTileEntitySubstationEnergyHatch[5]; // IV, LuV, ZPM, UV, UHV
     public static final MetaTileEntitySubstationEnergyHatch[] SUBSTATION_ENERGY_OUTPUT_HATCH = new MetaTileEntitySubstationEnergyHatch[5]; // IV, LuV, ZPM, UV, UHV
+    public static MetaTileEntityCreativeEnergyHatch CREATIVE_ENERGY_HATCH;
     public static final MetaTileEntityRotorHolder[] ROTOR_HOLDER = new MetaTileEntityRotorHolder[6]; // HV, EV, IV, LuV, ZPM, UV
     public static final MetaTileEntityMufflerHatch[] MUFFLER_HATCH = new MetaTileEntityMufflerHatch[GTValues.UV + 1]; // LV-UV
     public static final MetaTileEntityFusionReactor[] FUSION_REACTOR = new MetaTileEntityFusionReactor[3];
@@ -825,6 +827,8 @@ public class MetaTileEntities {
                 new MetaTileEntityEnergyHatch(gregtechId("energy_hatch.input_4a.ev"), GTValues.EV, 4, false));
         ENERGY_OUTPUT_HATCH_4A[0] = registerMetaTileEntity(1400,
                 new MetaTileEntityEnergyHatch(gregtechId("energy_hatch.output_4a.ev"), GTValues.EV, 4, true));
+
+        CREATIVE_ENERGY_HATCH = registerMetaTileEntity(1800, new MetaTileEntityCreativeEnergyHatch());
 
         // Transformer, IDs 1270-1299
         endPos = GregTechAPI.isHighTier() ? TRANSFORMER.length - 1 : Math.min(TRANSFORMER.length - 1, GTValues.UV);
