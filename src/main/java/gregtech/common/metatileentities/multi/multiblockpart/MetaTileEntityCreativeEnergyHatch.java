@@ -40,14 +40,13 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
     protected IEnergyContainer energyContainer;
 
     private long voltage = 0;
-    private int amps = 1;
+    private long amps = 1;
 
     private int setTier = 0;
 
     public MetaTileEntityCreativeEnergyHatch() {
         super(GTUtility.gregtechId("energy_hatch.creative"), GTValues.MAX);
-        this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * 64L * amps,
-                voltage, amps);
+        updateEnergyData();
     }
 
     @Override
@@ -102,7 +101,7 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
                 .widget(new CycleButtonWidget(7, 7, 30, 20, GTValues.VNF, () -> setTier, tier -> {
                     setTier = tier;
                     voltage = GTValues.V[setTier];
-                    updateEnergy();
+                    updateEnergyData();
                 }));
         builder.label(7, 32, "gregtech.creative.energy.voltage");
         builder.widget(new ImageWidget(7, 44, 156, 20, GuiTextures.DISPLAY));
@@ -110,36 +109,45 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
             if (!value.isEmpty()) {
                 voltage = Long.parseLong(value);
                 setTier = GTUtility.getTierByVoltage(voltage);
-                updateEnergy();
+                updateEnergyData();
             }
         }).setAllowedChars(TextFieldWidget2.NATURAL_NUMS).setMaxLength(19).setValidator(getTextFieldValidator()));
 
         builder.label(7, 74, "gregtech.creative.energy.amperage");
-        builder.widget(new ClickButtonWidget(7, 87, 20, 20, "-", data -> amps = --amps == -1 ? 0 : amps));
+        builder.widget(new ClickButtonWidget(7, 87, 20, 20, "-", data -> {
+            if (amps > 0) {
+                amps--;
+            }
+            updateEnergyData();
+        }));
         builder.widget(new ClickButtonWidget(7, 111, 20, 20, "÷4", clickData -> {
             if (amps / 4 > 0) {
-                amps = Math.round(amps / 4);
+                amps = amps / 4;
             }
+            else {
+                amps = 1;
+            }
+            updateEnergyData();
         }));
         builder.widget(new ImageWidget(29, 87, 118, 20, GuiTextures.DISPLAY));
         builder.widget(new TextFieldWidget2(31, 93, 114, 16, () -> String.valueOf(amps), value -> {
             if (!value.isEmpty()) {
                 amps = Integer.parseInt(value);
             }
-            updateEnergy();
+            updateEnergyData();
         }).setMaxLength(10).setNumbersOnly(0, Integer.MAX_VALUE));
         builder.widget(new ClickButtonWidget(149, 87, 20, 20, "+", data -> {
             if (amps < Integer.MAX_VALUE) {
                 amps++;
             }
-            updateEnergy();
+            updateEnergyData();
         }));
         builder.widget(new ClickButtonWidget(149, 111, 20, 20, "x4", data -> {
-            //Somehow doesn't block it from going over max int.
-            if (amps * 4 < Integer.MAX_VALUE) {
+            //Somehow doesn't block it from going over max int and resetting to 0.
+            if (amps * 4 <= Integer.MAX_VALUE) {
                 amps = amps * 4;
             }
-            updateEnergy();
+            updateEnergyData();
         }));
 
         //builder.dynamicLabel(7, 110, () -> "Energy I/O per sec: " + this.lastEnergyIOPerSec, 0x232323);
@@ -180,15 +188,15 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
         };
     }
 
-    private void updateEnergy() {
-        this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * 64L * amps,
+    private void updateEnergyData() {
+        this.energyContainer = EnergyContainerHandler.receiverContainer(this, voltage * amps,
                 voltage, amps);
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound data) {
         data.setLong("Voltage", voltage);
-        data.setInteger("Amps", amps);
+        data.setLong("Amps", amps);
         data.setByte("Tier", (byte) setTier);
         return super.writeToNBT(data);
     }
@@ -196,8 +204,9 @@ public class MetaTileEntityCreativeEnergyHatch extends MetaTileEntityMultiblockP
     @Override
     public void readFromNBT(NBTTagCompound data) {
         voltage = data.getLong("Voltage");
-        amps = data.getInteger("Amps");
+        amps = data.getLong("Amps");
         setTier = data.getByte("Tier");
         super.readFromNBT(data);
+        updateEnergyData();
     }
 }
