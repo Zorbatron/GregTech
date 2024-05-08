@@ -69,6 +69,7 @@ dependencies {
     ant.unzip(src: "libs/Vintagium.zip",
               dest: "libs")
     compileOnly(files("libs/vintagium-mc1.12.2-0.1-dev.jar"))
+    runtimeOnly(files("libs/vintagium-mc1.12.2-0.1-dev.jar"))
 
     // Mods with Soft compat but which have no need to be in code, such as isModLoaded() checks and getModItem() recipes.
     // Uncomment any of these to test them in-game.
