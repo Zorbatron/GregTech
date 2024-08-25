@@ -34,6 +34,8 @@ public class AdvancedInfoProvider extends CapabilityInfoProvider<IAdvancedDataPr
                     break;
 
                 case PROGRESS:
+                    // I don't know of a good way to do this... At all :despair:
+                    // In fact, I don't think it's possible to do this without just passing the IProbeInfo to the TE
                     break;
             }
         }
