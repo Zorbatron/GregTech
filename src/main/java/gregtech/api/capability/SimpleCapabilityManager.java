@@ -6,6 +6,7 @@ import gregtech.api.metatileentity.multiblock.IMaintenance;
 import gregtech.api.terminal.hardware.HardwareProvider;
 import gregtech.api.worldgen.generator.GTWorldGenCapability;
 import gregtech.common.metatileentities.converter.ConverterTrait;
+import gregtech.integration.theoneprobe.provider.AdvancedProvider.IAdvancedDataProvider;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
@@ -51,6 +52,7 @@ public class SimpleCapabilityManager {
         registerCapabilityWithNoDefault(HardwareProvider.class);
         registerCapabilityWithNoDefault(ConverterTrait.class);
         registerCapabilityWithNoDefault(ILaserContainer.class);
+        registerCapabilityWithNoDefault(IAdvancedDataProvider.class);
 
         // internal capabilities
         CapabilityManager.INSTANCE.register(GTWorldGenCapability.class, GTWorldGenCapability.STORAGE,

@@ -5,6 +5,7 @@ import gregtech.api.capability.impl.EUToFEProvider;
 import gregtech.api.terminal.hardware.HardwareProvider;
 import gregtech.api.util.GTUtility;
 import gregtech.common.metatileentities.converter.ConverterTrait;
+import gregtech.integration.theoneprobe.provider.AdvancedProvider.IAdvancedDataProvider;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -31,6 +32,9 @@ public class GregtechCapabilities {
 
     @CapabilityInject(ConverterTrait.class)
     public static Capability<ConverterTrait> CAPABILITY_CONVERTER = null;
+
+    @CapabilityInject(IAdvancedDataProvider.class)
+    public static Capability<IAdvancedDataProvider> ADVANCED_DATA_PROVIDER = null;
 
     private static final ResourceLocation CAPABILITY_EU_TO_FE = GTUtility.gregtechId("fe_capability");
 

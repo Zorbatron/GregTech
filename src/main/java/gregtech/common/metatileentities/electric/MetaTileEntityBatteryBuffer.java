@@ -16,6 +16,9 @@ import gregtech.api.util.TextFormattingUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.PipelineUtil;
 import gregtech.common.ConfigHolder;
+import gregtech.integration.theoneprobe.provider.AdvancedProvider.IAdvancedDataProvider;
+import gregtech.integration.theoneprobe.provider.AdvancedProvider.InfoPair;
+import gregtech.integration.theoneprobe.provider.AdvancedProvider.TOPType;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,7 +46,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements IControllable, IDataInfoProvider {
+public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements IControllable, IDataInfoProvider,
+                                         IAdvancedDataProvider {
 
     private final int inventorySize;
     private boolean allowEnergyOutput = true;
@@ -76,6 +80,8 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
     public <T> T getCapability(Capability<T> capability, EnumFacing side) {
         if (capability == GregtechTileCapabilities.CAPABILITY_CONTROLLABLE) {
             return GregtechTileCapabilities.CAPABILITY_CONTROLLABLE.cast(this);
+        } else if (capability == GregtechCapabilities.ADVANCED_DATA_PROVIDER) {
+            return GregtechCapabilities.ADVANCED_DATA_PROVIDER.cast(this);
         }
         return super.getCapability(capability, side);
     }
@@ -204,5 +210,13 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
                 new TextComponentTranslation(TextFormattingUtil.formatNumbers(energyContainer.getOutputPerSec() / 20))
                         .setStyle(new Style().setColor(TextFormatting.YELLOW))));
         return list;
+    }
+
+    @Override
+    public InfoPair[] provideInformation() {
+        return new InfoPair[] {
+                new InfoPair(TOPType.TEXT, "Hello, World!"),
+                new InfoPair(TOPType.TEXT, "GregMeister")
+        };
     }
 }
