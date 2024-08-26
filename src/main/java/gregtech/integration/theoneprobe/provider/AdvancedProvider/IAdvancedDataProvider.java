@@ -1,6 +1,8 @@
 package gregtech.integration.theoneprobe.provider.AdvancedProvider;
 
+import java.util.List;
+
 public interface IAdvancedDataProvider {
 
-    InfoPair[] provideInformation();
+    List<InfoPair> provideInformation();
 }

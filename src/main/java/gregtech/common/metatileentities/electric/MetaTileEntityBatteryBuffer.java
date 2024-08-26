@@ -213,10 +213,12 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
     }
 
     @Override
-    public InfoPair[] provideInformation() {
-        return new InfoPair[] {
-                new InfoPair(TOPType.TEXT, "Hello, World!"),
-                new InfoPair(TOPType.TEXT, "GregMeister")
-        };
+    public List<InfoPair> provideInformation() {
+        List<InfoPair> infoPairs = new ArrayList<>();
+
+        infoPairs.add(new InfoPair(TOPType.TEXT, "Hello,"));
+        infoPairs.add(new InfoPair(TOPType.TEXT, "World!"));
+
+        return infoPairs;
     }
 }
