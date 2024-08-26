@@ -5,5 +5,5 @@ import java.util.function.Supplier;
 
 public interface IAdvancedDataProvider {
 
-    List<InfoPair> provideInformation(Supplier<Boolean> isPlayerSneaking);
+    List<InfoPair> provideInformation(boolean isPlayerSneaking);
 }

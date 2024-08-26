@@ -27,7 +27,7 @@ public class AdvancedInfoProvider extends CapabilityInfoProvider<IAdvancedDataPr
     @Override
     protected void addProbeInfo(IAdvancedDataProvider capability, IProbeInfo probeInfo, EntityPlayer player,
                                 TileEntity tileEntity, IProbeHitData data) {
-        capability.provideInformation(player::isSneaking).forEach(infoPair -> pairParser(probeInfo, infoPair));
+        capability.provideInformation(player.isSneaking()).forEach(infoPair -> pairParser(probeInfo, infoPair));
     }
 
     private void pairParser(IProbeInfo probeInfo, InfoPair infoPair) {

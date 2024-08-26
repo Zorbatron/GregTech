@@ -214,13 +214,13 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
     }
 
     @Override
-    public List<InfoPair> provideInformation(Supplier<Boolean> isPlayerSneaking) {
+    public List<InfoPair> provideInformation(boolean isPlayerSneaking) {
         List<InfoPair> infoPairs = new ArrayList<>();
 
         infoPairs.add(new InfoPair(TOPType.TEXT, "Hello,"));
         infoPairs.add(new InfoPair(TOPType.TEXT, "World!"));
 
-        if (isPlayerSneaking.get()) infoPairs.add(new InfoPair(TOPType.TEXT, "GregMeister"));
+        if (isPlayerSneaking) infoPairs.add(new InfoPair(TOPType.TEXT, "GregMeister"));
 
         return infoPairs;
     }
