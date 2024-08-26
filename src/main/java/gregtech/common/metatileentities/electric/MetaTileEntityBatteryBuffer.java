@@ -45,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements IControllable, IDataInfoProvider,
                                          IAdvancedDataProvider {
@@ -213,11 +214,13 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
     }
 
     @Override
-    public List<InfoPair> provideInformation() {
+    public List<InfoPair> provideInformation(Supplier<Boolean> isPlayerSneaking) {
         List<InfoPair> infoPairs = new ArrayList<>();
 
         infoPairs.add(new InfoPair(TOPType.TEXT, "Hello,"));
         infoPairs.add(new InfoPair(TOPType.TEXT, "World!"));
+
+        if (isPlayerSneaking.get()) infoPairs.add(new InfoPair(TOPType.TEXT, "GregMeister"));
 
         return infoPairs;
     }

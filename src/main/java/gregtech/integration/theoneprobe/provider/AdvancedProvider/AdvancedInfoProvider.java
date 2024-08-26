@@ -27,17 +27,19 @@ public class AdvancedInfoProvider extends CapabilityInfoProvider<IAdvancedDataPr
     @Override
     protected void addProbeInfo(IAdvancedDataProvider capability, IProbeInfo probeInfo, EntityPlayer player,
                                 TileEntity tileEntity, IProbeHitData data) {
-        for (InfoPair infoPair : capability.provideInformation()) {
-            switch (infoPair.getKey()) {
-                case TEXT:
-                    probeInfo.text(infoPair.getValue());
-                    break;
+        capability.provideInformation(player::isSneaking).forEach(infoPair -> pairParser(probeInfo, infoPair));
+    }
 
-                case PROGRESS:
-                    // I don't know of a good way to do this... At all :despair:
-                    // In fact, I don't think it's possible to do this without just passing the IProbeInfo to the TE
-                    break;
-            }
+    private void pairParser(IProbeInfo probeInfo, InfoPair infoPair) {
+        switch (infoPair.getKey()) {
+            case TEXT:
+                probeInfo.text(infoPair.getValue());
+                break;
+
+            case PROGRESS:
+                // I don't know of a good way to do this... At all :despair:
+                // In fact, I don't think it's possible to do this without just passing the IProbeInfo to the TE
+                break;
         }
     }
 }
