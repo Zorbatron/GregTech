@@ -9,9 +9,12 @@ import gregtech.api.capability.impl.EnergyContainerBatteryBuffer;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.ModularUI.Builder;
+import gregtech.api.gui.widgets.ImageWidget;
 import gregtech.api.gui.widgets.SlotWidget;
+import gregtech.api.gui.widgets.TextFieldWidget2;
 import gregtech.api.metatileentity.*;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.util.TextComponentUtil;
 import gregtech.api.util.TextFormattingUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.PipelineUtil;
@@ -45,13 +48,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements IControllable, IDataInfoProvider,
                                          IAdvancedDataProvider {
 
     private final int inventorySize;
     private boolean allowEnergyOutput = true;
+    private String test = "";
 
     public MetaTileEntityBatteryBuffer(ResourceLocation metaTileEntityId, int tier, int inventorySize) {
         super(metaTileEntityId, tier);
@@ -164,6 +167,10 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
         }
 
         builder.bindPlayerInventory(entityPlayer.inventory, GuiTextures.SLOT, 7, 18 + 18 * colSize + 12);
+
+        builder.widget(new ImageWidget(4, 18, 34, 18, GuiTextures.DISPLAY));
+        builder.widget(new TextFieldWidget2(6, 22, 32, 18, () -> this.test, (string) -> this.test = string));
+
         return builder.build(getHolder(), entityPlayer);
     }
 
@@ -217,10 +224,16 @@ public class MetaTileEntityBatteryBuffer extends TieredMetaTileEntity implements
     public List<InfoPair> provideInformation(boolean isPlayerSneaking) {
         List<InfoPair> infoPairs = new ArrayList<>();
 
-        infoPairs.add(new InfoPair(TOPType.TEXT, "Hello,"));
-        infoPairs.add(new InfoPair(TOPType.TEXT, "World!"));
+        infoPairs.add(new InfoPair(TOPType.TEXT,
+                TextComponentUtil.stringWithColor(TextFormatting.RED, "Hello,").getFormattedText()));
+        infoPairs.add(new InfoPair(TOPType.TEXT,
+                TextComponentUtil.stringWithColor(TextFormatting.GREEN, "World!").getFormattedText()));
 
         if (isPlayerSneaking) infoPairs.add(new InfoPair(TOPType.TEXT, "GregMeister"));
+
+        if (!this.test.isEmpty()) {
+            infoPairs.add(new InfoPair(TOPType.TEXT, this.test));
+        }
 
         return infoPairs;
     }
